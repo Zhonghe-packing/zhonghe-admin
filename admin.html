@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>众和包装后台登录</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f3f6fa;
+    font-family:Arial;
+}
+
+
+.box{
+
+    width:360px;
+    background:white;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 10px 30px #ddd;
+
+}
+
+
+h2{
+
+text-align:center;
+margin-bottom:30px;
+
+}
+
+
+input{
+
+width:100%;
+padding:12px;
+margin-bottom:15px;
+box-sizing:border-box;
+
+}
+
+
+button{
+
+width:100%;
+padding:12px;
+background:#1677ff;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+
+#msg{
+
+text-align:center;
+color:red;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+<h2>
+上海众和包装机械有限公司
+<br>
+后台登录
+</h2>
+
+
+<input id="username" placeholder="账号">
+
+<input id="password" 
+type="password"
+placeholder="密码">
+
+
+<button onclick="login()">
+登录
+</button>
+
+
+<p id="msg"></p>
+
+
+</div>
+
+
+
+<script>
+
+
+async function login(){
+
+
+let username =
+document.getElementById("username").value;
+
+
+let password =
+document.getElementById("password").value;
+
+
+
+let {data,error}=await supabaseClient
+.from("users")
+.select("*")
+.eq("username",username)
+.eq("password",password)
+.single();
+
+
+
+if(data){
+
+
+localStorage.setItem(
+"admin",
+JSON.stringify(data)
+);
+
+
+alert("登录成功");
+
+
+}
+else{
+
+
+document.getElementById("msg").innerHTML=
+"账号或密码错误";
+
+
+}
+
+
+}
+
+
+
+</script>
+
+
+</body>
+</html>
