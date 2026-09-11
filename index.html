@@ -1,264 +1,34 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>众和包装后台</title>
-
-
-<style>
-
-body{
-    margin:0;
-    background:#f5f7fa;
-    font-family:"Microsoft YaHei",Arial,sans-serif;
-}
-
-
-.container{
-
-    width:420px;
-
-    margin:120px auto;
-
-    background:white;
-
-    padding:40px;
-
-    border-radius:12px;
-
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-
-}
-
-
-h1{
-
-    text-align:center;
-
-    margin-bottom:35px;
-
-    font-size:32px;
-
-}
-
-
-
-input{
-
-    width:100%;
-
-    box-sizing:border-box;
-
-    padding:14px;
-
-    margin:10px 0;
-
-    border:1px solid #ddd;
-
-    border-radius:6px;
-
-    font-size:16px;
-
-}
-
-
-
-button{
-
-    width:100%;
-
-    padding:14px;
-
-    margin-top:20px;
-
-    background:#1677ff;
-
-    color:white;
-
-    border:none;
-
-    border-radius:6px;
-
-    font-size:16px;
-
-    cursor:pointer;
-
-}
-
-
-
-button:hover{
-
-    background:#0958d9;
-
-}
-
-
-
-#msg{
-
-    text-align:center;
-
-    margin-top:20px;
-
-    color:#1677ff;
-
-}
-
-
-</style>
-
-
+<link rel="stylesheet" href="style.css">
 </head>
-
-
-
 <body>
-
-
-
-<div class="container">
-
-
+<div class="box">
 <h1>众和包装后台</h1>
-
-
-<input 
-id="username"
-placeholder="用户名">
-
-
-<input 
-id="password"
-type="password"
-placeholder="密码">
-
-
-
-<button onclick="login()">
-
-登录
-
-</button>
-
-
-
-<div id="msg"></div>
-
-
+<input id="username" placeholder="用户名">
+<input id="password" type="password" placeholder="密码">
+<button onclick="login()">登录</button>
+<p id="msg"></p>
 </div>
 
-
-
-<!-- Supabase官方库 -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<!-- 你的配置 -->
-
 <script src="supabase.js"></script>
-
-
-
 <script>
-
-
 async function login(){
-
-
-let username =
-document.getElementById("username").value.trim();
-
-
-let password =
-document.getElementById("password").value.trim();
-
-
-
-let msg =
-document.getElementById("msg");
-
-
-
 msg.innerHTML="正在登录...";
-
-
-
-const {data,error}=await supabaseClient
-
-.from("users")
-
+let {data,error}=await supabaseClient.from("users")
 .select("*")
-
-.eq("username",username)
-
-.eq("password",password)
-
+.eq("username",username.value)
+.eq("password",password.value)
 .single();
 
-
-
-if(error || !data){
-
-
-msg.innerHTML="账号或密码错误";
-
-return;
-
-
+if(error||!data){msg.innerHTML="账号或密码错误";return;}
+localStorage.user=JSON.stringify(data);
+location.href="dashboard.html";
 }
-
-
-
-if(data.role==="admin"){
-
-
-msg.innerHTML="登录成功";
-
-
-localStorage.setItem(
-
-"user",
-
-JSON.stringify(data)
-
-);
-
-
-
-setTimeout(()=>{
-
-
-window.location.href="dashboard.html";
-
-
-},800);
-
-
-
-}else{
-
-
-msg.innerHTML="没有管理员权限";
-
-
-}
-
-
-
-}
-
-
 </script>
-
-
-
 </body>
-
 </html>

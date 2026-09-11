@@ -1,0 +1,6 @@
+body{margin:0;background:#f5f7fa;font-family:Microsoft YaHei;}
+.box{width:420px;margin:120px auto;background:white;padding:45px;border-radius:15px;text-align:center;box-shadow:0 10px 30px #ddd;}
+input{width:90%;padding:14px;margin:10px;border:1px solid #ddd;border-radius:6px;}
+button{width:90%;padding:14px;background:#1677ff;color:white;border:0;border-radius:6px;margin-top:20px;}
+.dashboard{width:900px;margin:50px auto;}
+.card{background:white;padding:30px;border-radius:12px;box-shadow:0 5px 20px #ddd;}
