@@ -7,63 +7,73 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>众和包装后台管理</title>
+<title>众和销售助手</title>
 
 
 <style>
 
+*{
+    box-sizing:border-box;
+}
+
+
 body{
 
-margin:0;
+    margin:0;
 
-background:#f5f7fa;
+    background:#f5f7fa;
 
-font-family:"Microsoft YaHei",Arial;
+    font-family:"Microsoft YaHei",Arial,sans-serif;
 
 }
+
 
 
 .header{
 
-height:70px;
+    height:70px;
 
-background:white;
+    background:#ffffff;
 
-display:flex;
+    display:flex;
 
-align-items:center;
+    align-items:center;
 
-justify-content:space-between;
+    justify-content:space-between;
 
-padding:0 40px;
+    padding:0 50px;
 
-box-shadow:0 2px 10px rgba(0,0,0,.05);
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
 
 }
+
 
 
 .logo{
 
-font-size:24px;
+    font-size:24px;
 
-font-weight:bold;
+    font-weight:bold;
+
+    color:#222;
 
 }
 
 
+
 .logout{
 
-background:#ff4d4f;
+    background:#ff4d4f;
 
-color:white;
+    border:none;
 
-border:none;
+    color:white;
 
-padding:10px 25px;
+    padding:10px 25px;
 
-border-radius:6px;
+    border-radius:6px;
 
-cursor:pointer;
+    cursor:pointer;
 
 }
 
@@ -71,9 +81,9 @@ cursor:pointer;
 
 .container{
 
-max-width:1200px;
+    max-width:1200px;
 
-margin:50px auto;
+    margin:50px auto;
 
 }
 
@@ -81,13 +91,21 @@ margin:50px auto;
 
 .welcome{
 
-background:white;
+    background:white;
 
-padding:30px;
+    padding:30px;
 
-border-radius:12px;
+    border-radius:12px;
 
-margin-bottom:30px;
+    margin-bottom:35px;
+
+}
+
+
+
+.welcome h1{
+
+    margin:0 0 15px;
 
 }
 
@@ -95,11 +113,11 @@ margin-bottom:30px;
 
 .cards{
 
-display:grid;
+    display:grid;
 
-grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(2,1fr);
 
-gap:25px;
+    gap:30px;
 
 }
 
@@ -107,15 +125,13 @@ gap:25px;
 
 .card{
 
-background:white;
+    background:white;
 
-padding:35px;
+    padding:40px;
 
-border-radius:12px;
+    border-radius:15px;
 
-text-align:center;
-
-box-shadow:0 5px 20px rgba(0,0,0,.05);
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
 
 }
 
@@ -123,7 +139,19 @@ box-shadow:0 5px 20px rgba(0,0,0,.05);
 
 .card h2{
 
-margin-bottom:20px;
+    margin-top:0;
+
+    font-size:24px;
+
+}
+
+
+
+.card p{
+
+    color:#666;
+
+    height:40px;
 
 }
 
@@ -131,20 +159,39 @@ margin-bottom:20px;
 
 .card button{
 
-background:#1677ff;
+    margin-top:20px;
 
-color:white;
+    padding:12px 35px;
 
-border:0;
+    border:0;
 
-padding:12px 30px;
+    background:#1677ff;
 
-border-radius:6px;
+    color:white;
 
-cursor:pointer;
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:15px;
 
 }
 
+
+
+.card button:hover{
+
+    background:#0958d9;
+
+}
+
+
+
+.icon{
+
+    font-size:40px;
+
+}
 
 
 </style>
@@ -153,19 +200,25 @@ cursor:pointer;
 </head>
 
 
+
 <body>
 
 
 
 <div class="header">
 
+
 <div class="logo">
-众和包装后台
+
+众和销售助手
+
 </div>
 
 
 <button class="logout" onclick="logout()">
+
 退出登录
+
 </button>
 
 
@@ -177,12 +230,15 @@ cursor:pointer;
 <div class="container">
 
 
+
 <div class="welcome">
 
-<h2>欢迎管理员</h2>
+<h1>
+欢迎使用销售助手
+</h1>
 
-<p id="userInfo">
-正在读取...
+<p id="userinfo">
+正在读取管理员信息...
 </p>
 
 </div>
@@ -193,70 +249,109 @@ cursor:pointer;
 <div class="cards">
 
 
+
 <div class="card">
 
-<h2>品牌图库</h2>
+<div class="icon">📋</div>
+
+<h2>
+订单管理
+</h2>
 
 <p>
-管理企业图片、设备图片
+创建订单、查看订单状态、维护订单信息
 </p>
 
 <button>
-进入管理
+进入订单管理
 </button>
 
 </div>
 
 
 
+
 <div class="card">
 
-<h2>首页内容</h2>
+<div class="icon">📁</div>
+
+<h2>
+资料归档
+</h2>
 
 <p>
-修改首页文字和介绍
+合同、报价单、技术文件、图片资料统一保存
 </p>
 
 <button>
-进入管理
+进入资料库
 </button>
 
 </div>
 
 
 
+
 <div class="card">
 
-<h2>Banner管理</h2>
+<div class="icon">👥</div>
+
+<h2>
+客户管理
+</h2>
 
 <p>
-PC三段式和手机主图
+保存客户信息和历史合作记录
 </p>
 
 <button>
-进入管理
+查看客户
 </button>
 
 </div>
 
 
+
+
+<div class="card">
+
+<div class="icon">🔍</div>
+
+<h2>
+搜索中心
+</h2>
+
+<p>
+快速查询客户、订单和文件资料
+</p>
+
+<button>
+开始搜索
+</button>
+
 </div>
 
 
+
 </div>
+
+
+
+</div>
+
 
 
 
 <script>
 
 
-let user =
-localStorage.getItem("user");
+let user = localStorage.getItem("user");
+
 
 
 if(!user){
 
-window.location.href="index.html";
+    window.location.href="index.html";
 
 }
 
@@ -264,13 +359,14 @@ window.location.href="index.html";
 else{
 
 
-let data=JSON.parse(user);
+    let data = JSON.parse(user);
 
 
-document.getElementById("userInfo").innerHTML=
+    document.getElementById("userinfo").innerHTML =
 
-"当前账号："+data.username+
-"　角色："+data.role;
+    "当前账号：" + data.username +
+
+    "　权限：" + data.role;
 
 
 }
@@ -279,12 +375,12 @@ document.getElementById("userInfo").innerHTML=
 
 function logout(){
 
-localStorage.removeItem("user");
+    localStorage.removeItem("user");
 
-window.location.href="index.html";
-
+    window.location.href="index.html";
 
 }
+
 
 
 </script>
