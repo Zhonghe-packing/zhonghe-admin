@@ -1,0 +1,11 @@
+{
+  "name": "zhonghe-admin-dashboard-v2-real",
+  "files": 11,
+  "features": [
+    "supabase auth",
+    "profiles",
+    "customers",
+    "orders",
+    "storage"
+  ]
+}

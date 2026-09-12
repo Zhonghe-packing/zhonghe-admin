@@ -1,0 +1,68 @@
+
+:root{
+ --primary:#1769ff;
+ --bg:#f4f7fb;
+ --text:#182033;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:"Microsoft YaHei",Arial,sans-serif;
+}
+.login-box{
+ width:420px;
+ max-width:90%;
+ margin:90px auto;
+ background:#fff;
+ padding:45px;
+ border-radius:22px;
+ box-shadow:0 15px 45px rgba(0,0,0,.08);
+ text-align:center;
+}
+.logo-title{
+ font-size:32px;
+ font-weight:700;
+ color:var(--primary);
+}
+.slogan{color:#666;margin:15px 0 30px}
+input{
+ width:100%;
+ padding:14px;
+ margin:8px 0;
+ border:1px solid #ddd;
+ border-radius:10px;
+}
+button{
+ background:var(--primary);
+ color:#fff;
+ border:0;
+ padding:14px 40px;
+ border-radius:10px;
+ cursor:pointer;
+}
+.layout{display:flex}
+.sidebar{
+ width:250px;
+ min-height:100vh;
+ background:#fff;
+ padding:30px;
+}
+.content{flex:1;padding:35px}
+.card{
+ background:#fff;
+ padding:25px;
+ border-radius:18px;
+ margin-bottom:20px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:20px;
+}
+@media(max-width:700px){
+ .sidebar{display:none}
+ .content{padding:15px}
+ .grid{grid-template-columns:1fr}
+}
