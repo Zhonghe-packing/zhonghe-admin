@@ -1,1 +1,35 @@
-<div class="layout"><aside><h2>众和销售助手</h2><a>工作台</a><a>客户管理</a><a>订单管理</a><a>文件中心</a></aside><section class="content"><h1>工作台</h1><div class="cards"><div>客户<br><b id="customerCount">0</b></div><div>订单<br><b id="orderCount">0</b></div><div>文件<br><b id="fileCount">0</b></div></div><div class="box" id="welcome"></div></section></div>
+<section class="welcome-strip">
+  <div>
+    <p class="eyebrow">销售工作台</p>
+    <h2>欢迎回来，<span id="welcome-name">—</span></h2>
+    <p>今天也一起把客户与订单管理得井井有条。</p>
+  </div>
+  <span id="welcome-role" class="role-badge">—</span>
+</section>
+
+<section class="metric-grid" aria-label="数据概览">
+  <article class="metric-card metric-card--blue">
+    <div class="metric-icon">◎</div><div><p>客户数量</p><strong id="customer-count">—</strong><span>已归档客户</span></div>
+  </article>
+  <article class="metric-card metric-card--cyan">
+    <div class="metric-icon">▣</div><div><p>订单数量</p><strong id="order-count">—</strong><span>全部可见订单</span></div>
+  </article>
+  <article class="metric-card metric-card--indigo">
+    <div class="metric-icon">◇</div><div><p>文件数量</p><strong id="file-count">—</strong><span>订单资料归档</span></div>
+  </article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel">
+    <div class="panel-heading"><div><h3>最近订单</h3><p>快速查看最新业务进展</p></div><a href="#/orders">查看全部</a></div>
+    <div id="recent-orders" class="recent-list"><div class="skeleton-list"></div></div>
+  </article>
+  <article class="panel quick-panel">
+    <div class="panel-heading"><div><h3>快捷操作</h3><p>常用入口</p></div></div>
+    <div class="quick-actions">
+      <a href="#/customers"><span>＋</span><div><strong>新增客户</strong><small>建立客户档案</small></div><i>›</i></a>
+      <a href="#/orders"><span>＋</span><div><strong>新增订单</strong><small>登记订单信息</small></div><i>›</i></a>
+      <a href="#/files"><span>↑</span><div><strong>上传资料</strong><small>归档合同与图纸</small></div><i>›</i></a>
+    </div>
+  </article>
+</section>

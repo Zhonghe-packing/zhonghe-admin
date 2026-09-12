@@ -1,1 +1,29 @@
-<h1>客户管理</h1><p>连接 customers 表，RLS控制权限。</p>
+<section class="page-toolbar">
+  <div class="search-box"><span>⌕</span><input id="customer-search" type="search" placeholder="搜索公司、联系人、电话或国家"></div>
+  <div class="toolbar-actions">
+    <input id="customer-import-input" class="visually-hidden" type="file" accept=".xlsx,.xls,.csv">
+    <button id="customer-import" class="secondary-button" type="button">导入 Excel</button>
+    <button id="customer-add" class="primary-button" type="button">＋ 新增客户</button>
+  </div>
+</section>
+<section class="panel data-panel">
+  <div class="data-panel__heading"><div><h2>客户列表</h2><p id="customer-summary">正在读取客户数据…</p></div></div>
+  <div id="customer-list" class="responsive-list"><div class="page-loader"><span class="spinner spinner--blue"></span></div></div>
+  <div id="customer-pagination" class="pagination"></div>
+</section>
+<div id="customer-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
+  <div class="modal-card">
+    <header><div><p class="eyebrow">客户档案</p><h2 id="customer-modal-title">新增客户</h2></div><button type="button" data-close-modal="customer-modal" aria-label="关闭">×</button></header>
+    <form id="customer-form" class="form-grid">
+      <input id="customer-id" type="hidden">
+      <label class="field field--wide"><span>公司名称 *</span><input id="customer-company" required maxlength="120" placeholder="请输入公司全称"></label>
+      <label class="field"><span>联系人</span><input id="customer-contact" maxlength="60" placeholder="姓名"></label>
+      <label class="field"><span>电话</span><input id="customer-phone" maxlength="40" inputmode="tel" placeholder="手机或座机"></label>
+      <label class="field"><span>邮箱</span><input id="customer-email" type="email" maxlength="120" placeholder="name@company.com"></label>
+      <label class="field"><span>国家/地区</span><input id="customer-country" maxlength="60" placeholder="如：中国"></label>
+      <label id="customer-owner-field" class="field field--wide is-hidden"><span>负责人 *</span><select id="customer-owner"></select></label>
+      <label class="field field--wide"><span>备注</span><textarea id="customer-remark" rows="3" maxlength="500" placeholder="客户需求、来源或其他说明"></textarea></label>
+      <footer><button type="button" class="secondary-button" data-close-modal="customer-modal">取消</button><button id="customer-save" class="primary-button" type="submit">保存客户</button></footer>
+    </form>
+  </div>
+</div>

@@ -1,1 +1,31 @@
-<h1>订单管理</h1><p>连接 orders 表，RLS控制权限。</p>
+<section class="page-toolbar">
+  <div class="search-box"><span>⌕</span><input id="order-search" type="search" placeholder="搜索订单编号、客户、产品或状态"></div>
+  <div class="toolbar-actions">
+    <select id="order-status-filter" class="compact-select" aria-label="按状态筛选"><option value="">全部状态</option><option>待确认</option><option>进行中</option><option>已完成</option><option>已取消</option></select>
+    <input id="order-import-input" class="visually-hidden" type="file" accept=".xlsx,.xls,.csv">
+    <button id="order-import" class="secondary-button" type="button">导入 Excel</button>
+    <button id="order-add" class="primary-button" type="button">＋ 新增订单</button>
+  </div>
+</section>
+<section class="panel data-panel">
+  <div class="data-panel__heading"><div><h2>订单列表</h2><p id="order-summary">正在读取订单数据…</p></div></div>
+  <div id="order-list" class="responsive-list"><div class="page-loader"><span class="spinner spinner--blue"></span></div></div>
+  <div id="order-pagination" class="pagination"></div>
+</section>
+<div id="order-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+  <div class="modal-card">
+    <header><div><p class="eyebrow">订单档案</p><h2 id="order-modal-title">新增订单</h2></div><button type="button" data-close-modal="order-modal" aria-label="关闭">×</button></header>
+    <form id="order-form" class="form-grid">
+      <input id="order-id" type="hidden">
+      <label class="field"><span>订单编号 *</span><input id="order-no" required maxlength="80" placeholder="如：ZH-2026-001"></label>
+      <label class="field"><span>客户 *</span><select id="order-customer" required><option value="">请选择客户</option></select></label>
+      <label class="field field--wide"><span>产品 *</span><input id="order-product" required maxlength="160" placeholder="设备或产品名称"></label>
+      <label class="field"><span>数量</span><input id="order-quantity" type="number" min="0" step="1" placeholder="0"></label>
+      <label class="field"><span>金额（人民币）</span><input id="order-amount" type="number" min="0" step="0.01" placeholder="0.00"></label>
+      <label class="field"><span>状态</span><select id="order-status"><option>待确认</option><option>进行中</option><option>已完成</option><option>已取消</option></select></label>
+      <label id="order-owner-field" class="field is-hidden"><span>负责人 *</span><select id="order-owner"></select></label>
+      <label class="field field--wide"><span>备注</span><textarea id="order-remark" rows="3" maxlength="500" placeholder="交付要求或其他说明"></textarea></label>
+      <footer><button type="button" class="secondary-button" data-close-modal="order-modal">取消</button><button id="order-save" class="primary-button" type="submit">保存订单</button></footer>
+    </form>
+  </div>
+</div>
