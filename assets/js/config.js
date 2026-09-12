@@ -1,3 +1,3 @@
 
-export const SUPABASE_URL = "YOUR_SUPABASE_URL";
-export const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+export const SUPABASE_URL = "https://ozctrkjtcsqacgqkospq.supabase.co/rest/v1/";
+export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96Y3Rya2p0Y3NxYWNncWtvc3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxMTI2NDcsImV4cCI6MjEwNDY4ODY0N30.ZfhAGXsstYBQztI8XgOPYHwcKpash623ji1LkzB6yyk";
