@@ -10,30 +10,26 @@
 <aside class="sidebar">
 <h2>众和包装</h2>
 <p>销售助手</p>
-<div class="menu active">📋 订单管理</div>
-<div class="menu">👥 客户管理</div>
-<div class="menu">📁 资料归档</div>
-<div class="menu">📊 数据统计</div>
-<div class="menu">⚙ 系统设置</div>
+<div class="menu active" onclick="showPage('orders')">📋 订单管理</div>
+<div class="menu" onclick="showPage('customers')">👥 客户管理</div>
+<div class="menu" onclick="showPage('files')">📁 资料归档</div>
+<div class="menu" onclick="showPage('stats')">📊 数据统计</div>
 <button onclick="logout()">退出登录</button>
 </aside>
 
 <main class="main">
-<header>
 <h1>销售助手工作台</h1>
-<span>管理员</span>
-</header>
 
-<section class="cards">
-<div class="card"><h3>订单数量</h3><b id="orderCount">0</b></div>
-<div class="card"><h3>客户数量</h3><b id="customerCount">0</b></div>
-<div class="card"><h3>资料文件</h3><b id="fileCount">0</b></div>
-</section>
+<div class="cards">
+<div class="card">订单数量<h2 id="orderCount">0</h2></div>
+<div class="card">客户数量<h2 id="customerCount">0</h2></div>
+<div class="card">资料文件<h2 id="fileCount">0</h2></div>
+</div>
 
-<section class="panel">
+<div class="panel" id="content">
 <h2>订单资料归档</h2>
-<p>下一步接入 Supabase，实现订单录入、文件上传和搜索。</p>
-</section>
+<p>选择左侧功能开始管理。</p>
+</div>
 </main>
 </div>
 
