@@ -17,13 +17,36 @@
     <header><div><p class="eyebrow">订单档案</p><h2 id="order-modal-title">新增订单</h2></div><button type="button" data-close-modal="order-modal" aria-label="关闭">×</button></header>
     <form id="order-form" class="form-grid">
       <input id="order-id" type="hidden">
+      <div class="field field--wide customer-picker">
+        <span>客户 *</span>
+        <input id="order-customer" type="hidden">
+        <div class="customer-search-row">
+          <div class="search-box search-box--form"><span>⌕</span><input id="order-customer-search" type="search" autocomplete="off" placeholder="输入公司名称、联系人或电话，先查找已有客户"></div>
+          <button id="order-new-customer" class="secondary-button" type="button">＋ 新建客户</button>
+        </div>
+        <div id="order-customer-results" class="customer-results is-hidden"></div>
+        <div id="order-selected-customer" class="selected-customer is-hidden"></div>
+        <div id="order-customer-duplicate" class="duplicate-warning is-hidden"></div>
+      </div>
+
+      <section id="order-new-customer-fields" class="customer-create-fields field--wide is-hidden">
+        <div class="subsection-heading"><div><strong>新客户资料</strong><small>老板只填公司名称和负责人也可以，其他资料以后由销售补充</small></div><button id="order-cancel-new-customer" type="button">取消新建</button></div>
+        <div class="nested-form-grid">
+          <label class="field field--wide"><span>公司名称 *</span><input id="order-new-company" maxlength="120" placeholder="请输入公司全称"></label>
+          <label class="field"><span>联系人</span><input id="order-new-contact" maxlength="60" placeholder="可以暂时不填"></label>
+          <label class="field"><span>电话</span><input id="order-new-phone" maxlength="40" inputmode="tel" placeholder="可以暂时不填"></label>
+          <label class="field"><span>邮箱</span><input id="order-new-email" type="email" maxlength="120" placeholder="可以暂时不填"></label>
+          <label class="field"><span>国家/地区</span><input id="order-new-country" maxlength="60" placeholder="可以暂时不填"></label>
+          <label class="field field--wide"><span>地址</span><input id="order-new-address" maxlength="240" placeholder="可以暂时不填"></label>
+        </div>
+      </section>
+
       <label class="field"><span>订单编号 *</span><input id="order-no" required maxlength="80" placeholder="如：ZH-2026-001"></label>
-      <label class="field"><span>客户 *</span><select id="order-customer" required><option value="">请选择客户</option></select></label>
+      <label id="order-owner-field" class="field is-hidden"><span>负责人 *</span><select id="order-owner"></select><small id="order-owner-hint" class="field-hint">新客户与订单将归属同一负责人</small></label>
       <label class="field field--wide"><span>产品 *</span><input id="order-product" required maxlength="160" placeholder="设备或产品名称"></label>
       <label class="field"><span>数量</span><input id="order-quantity" type="number" min="0" step="1" placeholder="0"></label>
       <label class="field"><span>金额（人民币）</span><input id="order-amount" type="number" min="0" step="0.01" placeholder="0.00"></label>
       <label class="field"><span>状态</span><select id="order-status"><option>待确认</option><option>进行中</option><option>已完成</option><option>已取消</option></select></label>
-      <label id="order-owner-field" class="field is-hidden"><span>负责人 *</span><select id="order-owner"></select></label>
       <label class="field field--wide"><span>备注</span><textarea id="order-remark" rows="3" maxlength="500" placeholder="交付要求或其他说明"></textarea></label>
       <footer><button type="button" class="secondary-button" data-close-modal="order-modal">取消</button><button id="order-save" class="primary-button" type="submit">保存订单</button></footer>
     </form>

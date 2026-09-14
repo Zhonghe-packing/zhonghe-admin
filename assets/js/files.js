@@ -14,7 +14,7 @@ export async function initFiles(root) {
 
   async function loadReferences() {
     const [customersResult, ordersResult, profilesResult] = await Promise.all([
-      supabaseClient.from('customers').select('id,company,owner_id').order('company'),
+      supabaseClient.from('customers').select('id,company,contact,phone,email,country,address,owner_id').order('company'),
       supabaseClient.from('orders').select('id,order_no,customer_id,owner_id').order('created_at', { ascending: false }),
       isBoss() ? supabaseClient.from('profiles').select('user_id,name,username,role').order('name') : Promise.resolve({ data: [], error: null })
     ]);
@@ -45,6 +45,40 @@ export async function initFiles(root) {
   const ownerName = id => state.profiles.find(item => item.user_id === id)?.name || state.profiles.find(item => item.user_id === id)?.username || (id === appState.user.id ? (appState.profile.name || appState.profile.username) : '—');
   const iconFor = name => /\.pdf$/i.test(name) ? 'PDF' : /\.(png|jpe?g|webp)$/i.test(name) ? 'IMG' : /\.xlsx?$/i.test(name) ? 'XLS' : /\.docx?$/i.test(name) ? 'DOC' : 'FILE';
 
+  function selectedCustomer() {
+    return state.customers.find(item => String(item.id) === $('#file-customer', root).value) || null;
+  }
+
+  function syncFileOwner(customer = null) {
+    if (!isBoss()) return;
+    const select = $('#file-owner', root);
+    if (customer?.owner_id) select.value = customer.owner_id;
+    select.disabled = Boolean(customer);
+  }
+
+  function showCustomerEnrichment(customer = null) {
+    const section = $('#file-customer-enrichment', root);
+    if (!customer) {
+      section.classList.add('is-hidden');
+      syncFileOwner(null);
+      return;
+    }
+    const fields = ['contact', 'phone', 'email', 'country', 'address'];
+    const missingLabels = [];
+    const labels = { contact: '联系人', phone: '电话', email: '邮箱', country: '国家/地区', address: '地址' };
+    fields.forEach(field => {
+      $(`#file-customer-${field}`, root).value = customer[field] || '';
+      if (!customer[field]) missingLabels.push(labels[field]);
+    });
+    if (!missingLabels.length) {
+      section.classList.add('is-hidden');
+    } else {
+      $('#file-customer-enrichment-note', root).textContent = `${customer.company} 还缺少：${missingLabels.join('、')}。知道多少填多少，也可以跳过。`;
+      section.classList.remove('is-hidden');
+    }
+    syncFileOwner(customer);
+  }
+
   function filteredRows() {
     const q = state.search.toLowerCase();
     if (!q) return state.rows;
@@ -70,7 +104,11 @@ export async function initFiles(root) {
 
   $('#file-upload', root).addEventListener('click', () => {
     $('#file-form', root).reset(); $('#selected-file-name', root).textContent = 'PDF、图片、Excel 或 Word';
-    if (isBoss() && $('#file-owner', root).options.length) $('#file-owner', root).selectedIndex = 0;
+    $('#file-customer-enrichment', root).classList.add('is-hidden');
+    if (isBoss() && $('#file-owner', root).options.length) {
+      $('#file-owner', root).disabled = false;
+      $('#file-owner', root).selectedIndex = 0;
+    }
     openModal('file-modal');
   });
   $('#file-search', root).addEventListener('input', debounce(event => { state.search = event.target.value.trim(); state.page = 1; render(); }));
@@ -79,10 +117,14 @@ export async function initFiles(root) {
     const customerId = event.target.value;
     const options = state.orders.filter(order => !customerId || String(order.customer_id) === customerId);
     $('#file-order', root).innerHTML = '<option value="">不关联订单</option>' + options.map(item => `<option value="${item.id}">${escapeHtml(item.order_no || `订单 ${item.id}`)}</option>`).join('');
+    showCustomerEnrichment(selectedCustomer());
   });
   $('#file-order', root).addEventListener('change', event => {
     const order = state.orders.find(item => String(item.id) === event.target.value);
-    if (order?.customer_id) $('#file-customer', root).value = order.customer_id;
+    if (order?.customer_id) {
+      $('#file-customer', root).value = order.customer_id;
+      showCustomerEnrichment(selectedCustomer());
+    }
   });
 
   $('#file-form', root).addEventListener('submit', async event => {
@@ -94,11 +136,27 @@ export async function initFiles(root) {
     const maxBytes = (Number(config.MAX_UPLOAD_MB) || 20) * 1024 * 1024;
     if (file.size > maxBytes) return showToast(`文件不能超过 ${config.MAX_UPLOAD_MB || 20}MB`, 'error');
 
-    const ownerId = isBoss() ? $('#file-owner', root).value : appState.user.id;
+    const customer = selectedCustomer();
+    const ownerId = customer?.owner_id || (isBoss() ? $('#file-owner', root).value : appState.user.id);
     const dateFolder = new Date().toISOString().slice(0, 7);
     const storagePath = `${ownerId}/${dateFolder}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
     const button = $('#file-save', root); setButtonLoading(button, true, '正在上传…');
     try {
+      if (customer && !$('#file-customer-enrichment', root).classList.contains('is-hidden')) {
+        const additions = {
+          contact: $('#file-customer-contact', root).value.trim() || customer.contact || null,
+          phone: $('#file-customer-phone', root).value.trim() || customer.phone || null,
+          email: $('#file-customer-email', root).value.trim() || customer.email || null,
+          country: $('#file-customer-country', root).value.trim() || customer.country || null,
+          address: $('#file-customer-address', root).value.trim() || customer.address || null
+        };
+        const changed = Object.keys(additions).some(key => additions[key] !== (customer[key] || null));
+        if (changed) {
+          const { error: customerError } = await supabaseClient.from('customers').update(additions).eq('id', customer.id);
+          if (customerError) throw customerError;
+          Object.assign(customer, additions);
+        }
+      }
       const { error: uploadError } = await supabaseClient.storage.from(bucket).upload(storagePath, file, { contentType: file.type || undefined, upsert: false });
       if (uploadError) throw uploadError;
       const payload = {

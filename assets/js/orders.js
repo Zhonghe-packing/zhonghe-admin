@@ -7,20 +7,22 @@ import {
 } from './utils.js';
 
 export async function initOrders(root) {
-  const state = { rows: [], customers: [], profiles: [], page: 1, search: '', status: '' };
+  const state = {
+    rows: [], customers: [], profiles: [], page: 1, search: '', status: '',
+    selectedCustomerId: null, newCustomerMode: false
+  };
   const pageSize = Number(getConfig().PAGE_SIZE) || 10;
   wireModalDismiss(root);
 
   async function loadReferences() {
     const [{ data: customers, error: customerError }, profilesResult] = await Promise.all([
-      supabaseClient.from('customers').select('id,company,owner_id').order('company'),
+      supabaseClient.from('customers').select('id,company,contact,phone,email,country,address,owner_id').order('company'),
       isBoss() ? supabaseClient.from('profiles').select('user_id,name,username,role').order('name') : Promise.resolve({ data: [], error: null })
     ]);
     if (customerError) throw customerError;
     if (profilesResult.error) throw profilesResult.error;
     state.customers = customers || [];
     state.profiles = profilesResult.data || [];
-    $('#order-customer', root).innerHTML = '<option value="">请选择客户</option>' + state.customers.map(item => `<option value="${item.id}">${escapeHtml(item.company)}</option>`).join('');
     if (isBoss()) {
       const sales = state.profiles.filter(item => item.role === 'sales');
       $('#order-owner', root).innerHTML = sales.map(item => `<option value="${escapeHtml(item.user_id)}">${escapeHtml(item.name || item.username)} (${escapeHtml(item.username)})</option>`).join('');
@@ -40,6 +42,105 @@ export async function initOrders(root) {
 
   const customerName = id => state.customers.find(item => String(item.id) === String(id))?.company || '—';
   const ownerName = id => state.profiles.find(item => item.user_id === id)?.name || state.profiles.find(item => item.user_id === id)?.username || (id === appState.user.id ? (appState.profile.name || appState.profile.username) : '—');
+
+  const normalizeCompany = value => String(value || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[\s·•,，.。()（）\-—_]+/g, '');
+
+  function setOwnerForCustomer(customer = null) {
+    if (!isBoss()) return;
+    const select = $('#order-owner', root);
+    if (customer?.owner_id) select.value = customer.owner_id;
+    select.disabled = Boolean(customer);
+    $('#order-owner-hint', root).textContent = customer
+      ? `负责人继承自客户：${ownerName(customer.owner_id)}`
+      : '新客户与订单将归属同一负责人';
+  }
+
+  function clearCustomerSelection(keepSearch = true) {
+    state.selectedCustomerId = null;
+    $('#order-customer', root).value = '';
+    $('#order-selected-customer', root).classList.add('is-hidden');
+    $('#order-selected-customer', root).innerHTML = '';
+    if (!keepSearch) $('#order-customer-search', root).value = '';
+    setOwnerForCustomer(null);
+  }
+
+  function selectCustomer(customer) {
+    state.newCustomerMode = false;
+    state.selectedCustomerId = customer.id;
+    $('#order-customer', root).value = customer.id;
+    $('#order-customer-search', root).value = customer.company;
+    $('#order-customer-results', root).classList.add('is-hidden');
+    $('#order-new-customer-fields', root).classList.add('is-hidden');
+    $('#order-customer-duplicate', root).classList.add('is-hidden');
+    const missing = [customer.contact, customer.phone, customer.email, customer.address].filter(Boolean).length < 2;
+    const selected = $('#order-selected-customer', root);
+    selected.innerHTML = `
+      <div><strong>${escapeHtml(customer.company)}</strong><small>${escapeHtml(customer.contact || '联系人待补充')} · ${escapeHtml(customer.phone || customer.email || '联系方式待补充')}</small></div>
+      ${missing ? '<span class="incomplete-chip">资料待补充</span>' : '<span class="complete-chip">已有客户</span>'}
+      <button id="order-change-customer" type="button">更换</button>`;
+    selected.classList.remove('is-hidden');
+    setOwnerForCustomer(customer);
+  }
+
+  function findCustomers(query) {
+    const q = String(query || '').trim().toLowerCase();
+    const normalized = normalizeCompany(q);
+    if (!q) return [];
+    return state.customers.filter(customer => {
+      const fields = [customer.company, customer.contact, customer.phone, customer.email];
+      return fields.some(value => String(value || '').toLowerCase().includes(q))
+        || normalizeCompany(customer.company).includes(normalized);
+    }).slice(0, 7);
+  }
+
+  function renderCustomerMatches(query) {
+    const matches = findCustomers(query);
+    const results = $('#order-customer-results', root);
+    if (!String(query || '').trim() || state.newCustomerMode || state.selectedCustomerId) {
+      results.classList.add('is-hidden');
+      return;
+    }
+    results.innerHTML = matches.length
+      ? matches.map(customer => `<button type="button" data-pick-customer="${customer.id}"><div><strong>${escapeHtml(customer.company)}</strong><small>${escapeHtml(customer.contact || '联系人待补充')} · ${escapeHtml(customer.phone || customer.email || '联系方式待补充')}</small></div><span>${escapeHtml(ownerName(customer.owner_id))}</span></button>`).join('')
+      : `<div class="customer-no-result"><strong>没有找到“${escapeHtml(query)}”</strong><small>确认名称无误后，可点击右侧“新建客户”</small></div>`;
+    results.classList.remove('is-hidden');
+  }
+
+  function startNewCustomer() {
+    const company = $('#order-customer-search', root).value.trim();
+    clearCustomerSelection(true);
+    state.newCustomerMode = true;
+    $('#order-customer-results', root).classList.add('is-hidden');
+    $('#order-new-company', root).value = company;
+    $('#order-new-contact', root).value = '';
+    $('#order-new-phone', root).value = '';
+    $('#order-new-email', root).value = '';
+    $('#order-new-country', root).value = '';
+    $('#order-new-address', root).value = '';
+    $('#order-new-customer-fields', root).classList.remove('is-hidden');
+    showDuplicateWarning(company);
+    setTimeout(() => $('#order-new-company', root).focus(), 30);
+  }
+
+  function showDuplicateWarning(companyName) {
+    const normalized = normalizeCompany(companyName);
+    const likely = normalized.length >= 2
+      ? state.customers.filter(customer => {
+          const existing = normalizeCompany(customer.company);
+          return existing === normalized || existing.includes(normalized) || normalized.includes(existing);
+        }).slice(0, 3)
+      : [];
+    const warning = $('#order-customer-duplicate', root);
+    if (!likely.length) {
+      warning.classList.add('is-hidden');
+      return;
+    }
+    warning.innerHTML = `<strong>可能已经存在同一客户：</strong>${likely.map(customer => `<button type="button" data-pick-customer="${customer.id}">${escapeHtml(customer.company)}</button>`).join('')}`;
+    warning.classList.remove('is-hidden');
+  }
 
   function filteredRows() {
     const q = state.search.toLowerCase();
@@ -71,19 +172,41 @@ export async function initOrders(root) {
     $('#order-modal-title', root).textContent = row ? '编辑订单' : '新增订单';
     $('#order-id', root).value = row?.id || '';
     $('#order-no', root).value = row?.order_no || '';
-    $('#order-customer', root).value = row?.customer_id || '';
     $('#order-product', root).value = row?.product || '';
     $('#order-quantity', root).value = row?.quantity ?? '';
     $('#order-amount', root).value = row?.amount ?? '';
     $('#order-status', root).value = row?.status || '待确认';
     $('#order-remark', root).value = row?.remark || '';
-    if (isBoss() && $('#order-owner', root).options.length) $('#order-owner', root).value = row?.owner_id || $('#order-owner', root).options[0].value;
+    state.newCustomerMode = false;
+    $('#order-new-customer-fields', root).classList.add('is-hidden');
+    $('#order-customer-results', root).classList.add('is-hidden');
+    $('#order-customer-duplicate', root).classList.add('is-hidden');
+    clearCustomerSelection(false);
+    if (isBoss() && $('#order-owner', root).options.length) {
+      $('#order-owner', root).value = row?.owner_id || $('#order-owner', root).options[0].value;
+    }
+    if (row?.customer_id) {
+      const customer = state.customers.find(item => String(item.id) === String(row.customer_id));
+      if (customer) selectCustomer(customer);
+    }
     openModal('order-modal');
   }
 
-  $('#order-add', root).addEventListener('click', () => {
-    if (!state.customers.length) return showToast('请先新增客户，再创建订单', 'info');
-    openEditor();
+  $('#order-add', root).addEventListener('click', () => openEditor());
+  $('#order-customer-search', root).addEventListener('input', debounce(event => {
+    if (state.selectedCustomerId) clearCustomerSelection(true);
+    if (state.newCustomerMode) {
+      $('#order-new-company', root).value = event.target.value.trim();
+      showDuplicateWarning(event.target.value);
+    } else renderCustomerMatches(event.target.value);
+  }, 150));
+  $('#order-new-company', root).addEventListener('input', debounce(event => showDuplicateWarning(event.target.value), 180));
+  $('#order-new-customer', root).addEventListener('click', startNewCustomer);
+  $('#order-cancel-new-customer', root).addEventListener('click', () => {
+    state.newCustomerMode = false;
+    $('#order-new-customer-fields', root).classList.add('is-hidden');
+    $('#order-customer-duplicate', root).classList.add('is-hidden');
+    renderCustomerMatches($('#order-customer-search', root).value);
   });
   $('#order-search', root).addEventListener('input', debounce(event => { state.search = event.target.value.trim(); state.page = 1; render(); }));
   $('#order-status-filter', root).addEventListener('change', event => { state.status = event.target.value; state.page = 1; render(); });
@@ -118,21 +241,79 @@ export async function initOrders(root) {
   $('#order-form', root).addEventListener('submit', async event => {
     event.preventDefault();
     const id = $('#order-id', root).value;
-    const payload = {
-      order_no: $('#order-no', root).value.trim(), customer_id: Number($('#order-customer', root).value),
-      product: $('#order-product', root).value.trim(), quantity: Number($('#order-quantity', root).value) || 0,
-      amount: Number($('#order-amount', root).value) || 0, status: $('#order-status', root).value,
-      remark: $('#order-remark', root).value.trim() || null,
-      owner_id: isBoss() ? $('#order-owner', root).value : appState.user.id
-    };
     const button = $('#order-save', root); setButtonLoading(button, true, '正在保存…');
-    const query = id ? supabaseClient.from('orders').update(payload).eq('id', id) : supabaseClient.from('orders').insert(payload);
-    const { error } = await query; setButtonLoading(button, false);
-    if (error) return showToast(errorMessage(error), 'error');
-    closeModal('order-modal'); showToast(id ? '订单信息已更新' : '订单已新增'); await load();
+    try {
+      let customer = state.customers.find(item => String(item.id) === String(state.selectedCustomerId));
+      let customerCreated = false;
+
+      if (state.newCustomerMode) {
+        const company = $('#order-new-company', root).value.trim();
+        if (!company) throw new Error('请填写新客户的公司名称');
+        const normalized = normalizeCompany(company);
+        const exactDuplicate = state.customers.find(item => normalizeCompany(item.company) === normalized);
+        if (exactDuplicate) {
+          selectCustomer(exactDuplicate);
+          throw new Error(`“${exactDuplicate.company}”已经存在，系统已为你选中原客户，请确认后再次保存`);
+        }
+        const customerOwnerId = isBoss() ? $('#order-owner', root).value : appState.user.id;
+        if (!customerOwnerId) throw new Error('请选择负责人');
+        const customerPayload = {
+          company,
+          contact: $('#order-new-contact', root).value.trim() || null,
+          phone: $('#order-new-phone', root).value.trim() || null,
+          email: $('#order-new-email', root).value.trim() || null,
+          country: $('#order-new-country', root).value.trim() || null,
+          address: $('#order-new-address', root).value.trim() || null,
+          remark: null,
+          owner_id: customerOwnerId
+        };
+        const { data, error } = await supabaseClient.from('customers').insert(customerPayload).select('*').single();
+        if (error) throw error;
+        customer = data;
+        customerCreated = true;
+        state.customers.push(customer);
+        state.selectedCustomerId = customer.id;
+      }
+
+      if (!customer) throw new Error('请先搜索选择已有客户，或在当前窗口新建客户');
+      const payload = {
+        order_no: $('#order-no', root).value.trim(), customer_id: customer.id,
+        product: $('#order-product', root).value.trim(), quantity: Number($('#order-quantity', root).value) || 0,
+        amount: Number($('#order-amount', root).value) || 0, status: $('#order-status', root).value,
+        remark: $('#order-remark', root).value.trim() || null,
+        owner_id: customer.owner_id
+      };
+      const query = id ? supabaseClient.from('orders').update(payload).eq('id', id) : supabaseClient.from('orders').insert(payload);
+      const { error } = await query;
+      if (error) {
+        if (customerCreated) {
+          selectCustomer(customer);
+          throw new Error(`客户“${customer.company}”已创建并已选中，但订单保存失败：${errorMessage(error)}`);
+        }
+        throw error;
+      }
+      closeModal('order-modal');
+      showToast(customerCreated ? '客户与订单已一起创建' : (id ? '订单信息已更新' : '订单已新增'));
+      await load();
+    } catch (error) {
+      showToast(errorMessage(error), 'error');
+    } finally {
+      setButtonLoading(button, false);
+    }
   });
 
   root.addEventListener('click', async event => {
+    const pickCustomerButton = event.target.closest('[data-pick-customer]');
+    if (pickCustomerButton) {
+      const customer = state.customers.find(item => String(item.id) === pickCustomerButton.dataset.pickCustomer);
+      if (customer) selectCustomer(customer);
+      return;
+    }
+    if (event.target.closest('#order-change-customer')) {
+      clearCustomerSelection(false);
+      $('#order-customer-search', root).focus();
+      return;
+    }
     const edit = event.target.closest('[data-edit-order]');
     if (edit) openEditor(state.rows.find(row => String(row.id) === edit.dataset.editOrder));
     const remove = event.target.closest('[data-delete-order]');

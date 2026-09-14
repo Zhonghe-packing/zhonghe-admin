@@ -36,10 +36,12 @@ export async function initCustomers(root) {
     return profile?.name || profile?.username || (ownerId === appState.user.id ? (appState.profile.name || appState.profile.username) : '—');
   }
 
+  const customerIncomplete = row => !row.contact || (!row.phone && !row.email) || !row.address;
+
   function filteredRows() {
     const q = state.search.toLowerCase();
     if (!q) return state.rows;
-    return state.rows.filter(row => [row.company, row.contact, row.phone, row.email, row.country, row.remark, ownerName(row.owner_id)]
+    return state.rows.filter(row => [row.company, row.contact, row.phone, row.email, row.country, row.address, row.remark, ownerName(row.owner_id)]
       .some(value => String(value || '').toLowerCase().includes(q)));
   }
 
@@ -54,9 +56,9 @@ export async function initCustomers(root) {
     } else {
       list.innerHTML = `
         <div class="table-wrap"><table><thead><tr><th>公司名称</th><th>联系人</th><th>电话 / 邮箱</th><th>国家</th><th>负责人</th><th>创建日期</th><th>操作</th></tr></thead><tbody>
-        ${paged.items.map(row => `<tr><td><strong>${escapeHtml(row.company)}</strong><small>${escapeHtml(row.remark || '暂无备注')}</small></td><td>${escapeHtml(row.contact || '—')}</td><td>${escapeHtml(row.phone || '—')}<small>${escapeHtml(row.email || '—')}</small></td><td>${escapeHtml(row.country || '—')}</td><td>${escapeHtml(ownerName(row.owner_id))}</td><td>${formatDate(row.created_at)}</td><td><div class="row-actions"><button data-edit-customer="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-customer="${row.id}" type="button">删除</button></div></td></tr>`).join('')}
+        ${paged.items.map(row => `<tr><td><strong>${escapeHtml(row.company)}</strong><small>${customerIncomplete(row) ? '资料待补充' : escapeHtml(row.remark || '资料完整')}</small></td><td>${escapeHtml(row.contact || '—')}</td><td>${escapeHtml(row.phone || '—')}<small>${escapeHtml(row.email || '—')}</small></td><td>${escapeHtml(row.country || '—')}<small>${escapeHtml(row.address || '地址待补充')}</small></td><td>${escapeHtml(ownerName(row.owner_id))}</td><td>${formatDate(row.created_at)}</td><td><div class="row-actions"><button data-edit-customer="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-customer="${row.id}" type="button">删除</button></div></td></tr>`).join('')}
         </tbody></table></div>
-        <div class="mobile-card-list">${paged.items.map(row => `<article class="record-card"><header><div><strong>${escapeHtml(row.company)}</strong><span>${escapeHtml(row.country || '未填写国家')}</span></div><span class="owner-chip">${escapeHtml(ownerName(row.owner_id))}</span></header><dl><div><dt>联系人</dt><dd>${escapeHtml(row.contact || '—')}</dd></div><div><dt>电话</dt><dd>${escapeHtml(row.phone || '—')}</dd></div><div><dt>邮箱</dt><dd>${escapeHtml(row.email || '—')}</dd></div></dl><footer><button data-edit-customer="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-customer="${row.id}" type="button">删除</button></footer></article>`).join('')}</div>`;
+        <div class="mobile-card-list">${paged.items.map(row => `<article class="record-card"><header><div><strong>${escapeHtml(row.company)}</strong><span>${customerIncomplete(row) ? '资料待补充' : escapeHtml(row.country || '资料完整')}</span></div><span class="owner-chip">${escapeHtml(ownerName(row.owner_id))}</span></header><dl><div><dt>联系人</dt><dd>${escapeHtml(row.contact || '—')}</dd></div><div><dt>电话</dt><dd>${escapeHtml(row.phone || '—')}</dd></div><div><dt>邮箱</dt><dd>${escapeHtml(row.email || '—')}</dd></div><div><dt>地址</dt><dd>${escapeHtml(row.address || '—')}</dd></div></dl><footer><button data-edit-customer="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-customer="${row.id}" type="button">删除</button></footer></article>`).join('')}</div>`;
     }
     renderPagination($('#customer-pagination', root), paged.page, paged.totalPages, page => { state.page = page; render(); });
   }
@@ -69,6 +71,7 @@ export async function initCustomers(root) {
     $('#customer-phone', root).value = row?.phone || '';
     $('#customer-email', root).value = row?.email || '';
     $('#customer-country', root).value = row?.country || '';
+    $('#customer-address', root).value = row?.address || '';
     $('#customer-remark', root).value = row?.remark || '';
     if (isBoss() && $('#customer-owner', root).options.length) $('#customer-owner', root).value = row?.owner_id || $('#customer-owner', root).options[0].value;
     openModal('customer-modal');
@@ -90,7 +93,8 @@ export async function initCustomers(root) {
       const payload = sheetRows.map(row => ({
         company: pick(row, ['公司名称', '公司', 'company']), contact: pick(row, ['联系人', 'contact']),
         phone: pick(row, ['电话', '手机', 'phone']), email: pick(row, ['邮箱', 'email']),
-        country: pick(row, ['国家', '国家/地区', 'country']), remark: pick(row, ['备注', 'remark']),
+        country: pick(row, ['国家', '国家/地区', 'country']), address: pick(row, ['地址', '详细地址', 'address']) || null,
+        remark: pick(row, ['备注', 'remark']),
         owner_id: isBoss() ? (profileByUsername.get(pick(row, ['负责人账号', '负责人', 'owner']).toUpperCase()) || defaultSalesOwner || appState.user.id) : appState.user.id
       })).filter(row => row.company);
       if (!payload.length) throw new Error('未找到有效数据，请确认表格包含“公司名称”列');
@@ -108,7 +112,8 @@ export async function initCustomers(root) {
     const payload = {
       company: $('#customer-company', root).value.trim(), contact: $('#customer-contact', root).value.trim() || null,
       phone: $('#customer-phone', root).value.trim() || null, email: $('#customer-email', root).value.trim() || null,
-      country: $('#customer-country', root).value.trim() || null, remark: $('#customer-remark', root).value.trim() || null,
+      country: $('#customer-country', root).value.trim() || null, address: $('#customer-address', root).value.trim() || null,
+      remark: $('#customer-remark', root).value.trim() || null,
       owner_id: isBoss() ? $('#customer-owner', root).value : appState.user.id
     };
     const button = $('#customer-save', root);

@@ -14,6 +14,16 @@
       <label class="upload-drop field--wide" for="archive-file"><span>↑</span><strong>选择要上传的文件</strong><small id="selected-file-name">PDF、图片、Excel 或 Word</small><input id="archive-file" type="file" required accept=".pdf,.png,.jpg,.jpeg,.webp,.xls,.xlsx,.doc,.docx"></label>
       <label class="field"><span>客户</span><select id="file-customer"><option value="">不关联客户</option></select></label>
       <label class="field"><span>订单</span><select id="file-order"><option value="">不关联订单</option></select></label>
+      <section id="file-customer-enrichment" class="customer-enrichment field--wide is-hidden">
+        <div class="subsection-heading"><div><strong>顺手补充客户资料</strong><small id="file-customer-enrichment-note">以下资料不完整，可填写后与文件一起保存；暂时不知道可以跳过</small></div><span>选填</span></div>
+        <div class="nested-form-grid">
+          <label class="field"><span>联系人</span><input id="file-customer-contact" maxlength="60" placeholder="暂时不知道可不填"></label>
+          <label class="field"><span>电话</span><input id="file-customer-phone" maxlength="40" inputmode="tel" placeholder="暂时不知道可不填"></label>
+          <label class="field"><span>邮箱</span><input id="file-customer-email" type="email" maxlength="120" placeholder="暂时不知道可不填"></label>
+          <label class="field"><span>国家/地区</span><input id="file-customer-country" maxlength="60" placeholder="暂时不知道可不填"></label>
+          <label class="field field--wide"><span>地址</span><input id="file-customer-address" maxlength="240" placeholder="暂时不知道可不填"></label>
+        </div>
+      </section>
       <label class="field"><span>文件类型</span><select id="file-type"><option>合同</option><option>报价单</option><option>图片</option><option>技术资料</option><option>其他</option></select></label>
       <label id="file-owner-field" class="field is-hidden"><span>负责人 *</span><select id="file-owner"></select></label>
       <label class="field field--wide"><span>备注</span><textarea id="file-remark" rows="3" maxlength="500" placeholder="文件内容说明"></textarea></label>

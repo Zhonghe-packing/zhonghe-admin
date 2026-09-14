@@ -9,6 +9,7 @@
 - `orders.customer_id`、`files.customer_id`、`files.order_id`：应与对应主键类型一致
 - `orders.quantity`、`orders.amount`：应为数字类型
 - `files.file_url`：保存 Storage 对象路径，不要求 Bucket 公开
+- `customers.address`：V1.1 新增的客户地址字段；旧项目运行 `SUPABASE_V11_MIGRATION.sql` 后获得
 
 ## 2. profiles 策略递归风险
 

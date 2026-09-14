@@ -125,19 +125,21 @@ export function errorMessage(error, fallback = '操作失败，请稍后重试')
   if (/row-level security|policy/i.test(message)) return '权限策略拒绝了本次操作，请联系管理员检查 RLS 设置';
   if (/infinite recursion/i.test(message)) return '权限表策略发生递归，请管理员按项目检查清单修复 profiles 策略';
   if (/duplicate key/i.test(message)) return '该编号或记录已存在，请检查后重试';
+  if (/invalid key/i.test(message)) return '文件存储路径无效，请刷新到最新版本后重新上传';
   if (/Failed to fetch|NetworkError/i.test(message)) return '网络连接失败，请检查网络后重试';
   return message;
 }
 
 export function safeFileName(name) {
-  const dot = name.lastIndexOf('.');
-  const ext = dot >= 0 ? name.slice(dot).toLowerCase() : '';
-  const base = (dot >= 0 ? name.slice(0, dot) : name)
-    .normalize('NFKC')
-    .replace(/[^\p{L}\p{N}._-]+/gu, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'file';
-  return `${base}${ext}`;
+  const value = String(name || '');
+  const dot = value.lastIndexOf('.');
+  const extension = dot >= 0
+    ? value.slice(dot + 1).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12)
+    : '';
+
+  // Storage 对象键只使用 ASCII。原始中文文件名仍保存于 files.file_name，
+  // 因此列表显示和下载名称都不会改变。
+  return extension ? `file.${extension}` : 'file';
 }
 
 export function readSpreadsheet(file) {
