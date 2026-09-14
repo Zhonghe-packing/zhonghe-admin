@@ -337,55 +337,57 @@ td small { max-width: 260px; overflow: hidden; margin-top: 3px; color: var(--ink
 
 /* Comfortable desktop density: default for office monitors and laptops */
 @media (min-width: 821px) {
-  :root { --sidebar: 260px; }
+  :root { --sidebar: 270px; }
+  body { font-size: 18px; }
   .sidebar__brand { min-height: 98px; padding: 0 23px; }
-  .sidebar__brand strong { font-size: 17px; }
-  .sidebar__brand span { font-size: 11px; }
+  .sidebar__brand strong { font-size: 19px; }
+  .sidebar__brand span { font-size: 12px; }
   .sidebar__nav { gap: 7px; padding: 30px 15px; }
-  .sidebar__nav a { min-height: 54px; gap: 15px; padding: 0 16px; font-size: 16px; }
-  .nav-icon { font-size: 23px; }
-  .sidebar-user strong { font-size: 15px; }
-  .sidebar-user span { font-size: 13px; }
+  .sidebar__nav a { min-height: 58px; gap: 15px; padding: 0 17px; font-size: 18px; }
+  .nav-icon { font-size: 25px; }
+  .sidebar-user strong { font-size: 17px; }
+  .sidebar-user span { font-size: 14px; }
   .topbar { height: 98px; padding: 0 38px; }
-  .topbar h1 { font-size: 27px; }
-  .topbar-date { font-size: 14px; }
-  .secure-chip { padding: 8px 12px; font-size: 13px; }
-  .page-content { max-width: 1760px; margin: 0 auto; padding: 34px 38px 44px; }
+  .topbar h1 { font-size: 30px; }
+  .topbar-date { font-size: 15px; }
+  .secure-chip { padding: 9px 13px; font-size: 15px; }
+  .page-content { max-width: 1680px; margin: 0 auto; padding: 34px 38px 44px; }
   .welcome-strip { min-height: 168px; padding: 33px 36px; }
-  .welcome-strip h2 { font-size: 30px; }
-  .welcome-strip p:last-child { font-size: 16px; }
-  .eyebrow { font-size: 13px; }
-  .role-badge, .owner-chip { padding: 8px 12px; font-size: 13px; }
+  .welcome-strip h2 { font-size: 33px; }
+  .welcome-strip p:last-child { font-size: 18px; }
+  .eyebrow { font-size: 14px; }
+  .role-badge, .owner-chip { padding: 8px 12px; font-size: 15px; }
   .metric-card { min-height: 155px; padding: 25px; }
-  .metric-card p, .metric-card span { font-size: 14px; }
-  .metric-card strong { font-size: 35px; }
-  .panel-heading h3, .data-panel__heading h2 { font-size: 19px; }
-  .panel-heading p, .data-panel__heading p, .panel-heading a { font-size: 14px; }
+  .metric-card p, .metric-card span { font-size: 16px; }
+  .metric-card strong { font-size: 38px; }
+  .panel-heading h3, .data-panel__heading h2 { font-size: 22px; }
+  .panel-heading p, .data-panel__heading p, .panel-heading a { font-size: 16px; }
   .page-toolbar { margin-bottom: 21px; }
   .search-box { width: min(500px, 100%); }
-  .search-box input { height: 48px; font-size: 15px; }
+  .search-box input { height: 50px; font-size: 17px; }
   .search-box--form { width: 100%; }
-  .primary-button, .secondary-button, .danger-button { min-height: 46px; padding: 0 18px; font-size: 15px; }
-  .compact-select { min-height: 46px; font-size: 15px; }
+  .primary-button, .secondary-button, .danger-button { min-height: 48px; padding: 0 19px; font-size: 17px; }
+  .compact-select { min-height: 48px; font-size: 17px; }
   .data-panel__heading { min-height: 86px; padding: 20px 24px; }
-  .storage-note { font-size: 13px; }
-  th { height: 53px; padding: 0 20px; font-size: 14px; }
-  td { padding: 18px 20px; font-size: 15px; }
-  td > strong { font-size: 15px; }
-  td small { margin-top: 4px; font-size: 13px; }
-  .status-tag { min-width: 70px; padding: 5px 10px; font-size: 13px; }
-  .row-actions button { padding: 7px 9px; font-size: 14px; }
-  .pagination { min-height: 68px; font-size: 14px; }
-  .pagination button { min-width: 82px; height: 39px; font-size: 13px; }
+  .storage-note { font-size: 15px; }
+  th { height: 56px; padding: 0 20px; font-size: 16px; }
+  td { padding: 19px 20px; font-size: 17px; }
+  td > strong { font-size: 17px; }
+  td small { margin-top: 4px; font-size: 15px; }
+  .status-tag { min-width: 76px; padding: 6px 11px; font-size: 15px; }
+  .row-actions button { padding: 8px 9px; font-size: 16px; }
+  .pagination { min-height: 70px; font-size: 16px; }
+  .pagination button { min-width: 84px; height: 41px; font-size: 15px; }
   .recent-order { padding: 17px 9px; }
-  .recent-order strong, .quick-actions strong { font-size: 15px; }
-  .recent-order small, .quick-actions small { font-size: 13px; }
+  .recent-order strong, .quick-actions strong { font-size: 17px; }
+  .recent-order small, .quick-actions small { font-size: 15px; }
   .quick-actions a { padding: 16px 8px; }
   .modal-card { width: min(100%, 780px); }
   .modal-card--narrow { width: min(100%, 680px); }
-  .modal-card > header h2 { font-size: 23px; }
-  .field > span { font-size: 15px; }
-  .field input, .field select, .field textarea { font-size: 15px; }
-  .customer-results > button strong, .selected-customer strong, .subsection-heading strong { font-size: 15px; }
-  .customer-results > button small, .customer-results > button > span, .selected-customer small, .subsection-heading small { font-size: 13px; }
+  .modal-card > header h2 { font-size: 25px; }
+  .field > span { font-size: 17px; }
+  .field input, .field select, .field textarea { min-height: 50px; font-size: 17px; }
+  .customer-results > button strong, .selected-customer strong, .subsection-heading strong { font-size: 17px; }
+  .customer-results > button small, .customer-results > button > span, .selected-customer small, .subsection-heading small { font-size: 15px; }
+  .field-hint, .upload-drop small, .duplicate-warning, .toast p { font-size: 15px; }
 }

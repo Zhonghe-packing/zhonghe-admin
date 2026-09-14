@@ -1,7 +1,7 @@
 import { appState, isBoss, supabaseClient, getConfig } from './supabase.js';
 import {
   $, closeModal, debounce, emptyState, errorMessage, escapeHtml, formatDate,
-  openModal, paginate, renderPagination, safeFileName, setButtonLoading,
+  openModal, paginate, renderPagination, setButtonLoading,
   showToast, wireModalDismiss
 } from './utils.js';
 
@@ -102,15 +102,26 @@ export async function initFiles(root) {
     renderPagination($('#file-pagination', root), paged.page, paged.totalPages, page => { state.page = page; render(); });
   }
 
-  $('#file-upload', root).addEventListener('click', () => {
-    $('#file-form', root).reset(); $('#selected-file-name', root).textContent = 'PDF、图片、Excel 或 Word';
+  function openUploader(orderId = '') {
+    $('#file-form', root).reset();
+    $('#selected-file-name', root).textContent = 'PDF、图片、Excel 或 Word';
     $('#file-customer-enrichment', root).classList.add('is-hidden');
     if (isBoss() && $('#file-owner', root).options.length) {
       $('#file-owner', root).disabled = false;
       $('#file-owner', root).selectedIndex = 0;
     }
+    const order = state.orders.find(item => String(item.id) === String(orderId));
+    if (order) {
+      $('#file-order', root).value = order.id;
+      if (order.customer_id) {
+        $('#file-customer', root).value = order.customer_id;
+        showCustomerEnrichment(selectedCustomer());
+      }
+    }
     openModal('file-modal');
-  });
+  }
+
+  $('#file-upload', root).addEventListener('click', () => openUploader());
   $('#file-search', root).addEventListener('input', debounce(event => { state.search = event.target.value.trim(); state.page = 1; render(); }));
   $('#archive-file', root).addEventListener('change', event => { $('#selected-file-name', root).textContent = event.target.files[0]?.name || 'PDF、图片、Excel 或 Word'; });
   $('#file-customer', root).addEventListener('change', event => {
@@ -139,7 +150,8 @@ export async function initFiles(root) {
     const customer = selectedCustomer();
     const ownerId = customer?.owner_id || (isBoss() ? $('#file-owner', root).value : appState.user.id);
     const dateFolder = new Date().toISOString().slice(0, 7);
-    const storagePath = `${ownerId}/${dateFolder}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
+    const extension = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || 'bin';
+    const storagePath = `${ownerId}/${dateFolder}/${crypto.randomUUID()}.${extension}`;
     const button = $('#file-save', root); setButtonLoading(button, true, '正在上传…');
     try {
       if (customer && !$('#file-customer-enrichment', root).classList.contains('is-hidden')) {
@@ -202,4 +214,9 @@ export async function initFiles(root) {
 
   try { await loadReferences(); } catch (error) { showToast(errorMessage(error), 'error'); }
   await load();
+  const archiveOrderId = new URLSearchParams(location.hash.split('?')[1] || '').get('order');
+  if (archiveOrderId) {
+    openUploader(archiveOrderId);
+    history.replaceState(null, '', `${location.pathname}${location.search}#/files`);
+  }
 }

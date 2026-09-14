@@ -161,7 +161,7 @@ export async function initOrders(root) {
     } else {
       list.innerHTML = `
         <div class="table-wrap"><table><thead><tr><th>订单编号</th><th>客户 / 产品</th><th>数量</th><th>金额</th><th>状态</th><th>负责人</th><th>日期</th><th>操作</th></tr></thead><tbody>
-        ${paged.items.map(row => `<tr><td><strong>${escapeHtml(row.order_no || '—')}</strong></td><td>${escapeHtml(customerName(row.customer_id))}<small>${escapeHtml(row.product || '—')}</small></td><td>${escapeHtml(row.quantity ?? '—')}</td><td><strong>${formatMoney(row.amount)}</strong></td><td><span class="status-tag status-tag--${statusClass(row.status)}">${escapeHtml(row.status || '待确认')}</span></td><td>${escapeHtml(ownerName(row.owner_id))}</td><td>${formatDate(row.created_at)}</td><td><div class="row-actions"><button data-edit-order="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-order="${row.id}" type="button">删除</button></div></td></tr>`).join('')}
+        ${paged.items.map(row => `<tr><td><strong>${escapeHtml(row.order_no || '—')}</strong></td><td>${escapeHtml(customerName(row.customer_id))}<small>${escapeHtml(row.product || '—')}</small></td><td>${escapeHtml(row.quantity ?? '—')}</td><td><strong>${formatMoney(row.amount)}</strong></td><td><span class="status-tag status-tag--${statusClass(row.status)}">${escapeHtml(row.status || '待确认')}</span></td><td>${escapeHtml(ownerName(row.owner_id))}</td><td>${formatDate(row.created_at)}</td><td><div class="row-actions"><button data-archive-order="${row.id}" type="button">归档</button><button data-edit-order="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-order="${row.id}" type="button">删除</button></div></td></tr>`).join('')}
         </tbody></table></div>
         <div class="mobile-card-list">${paged.items.map(row => `<article class="record-card"><header><div><strong>${escapeHtml(row.order_no || '未编号订单')}</strong><span>${escapeHtml(customerName(row.customer_id))}</span></div><span class="status-tag status-tag--${statusClass(row.status)}">${escapeHtml(row.status || '待确认')}</span></header><dl><div><dt>产品</dt><dd>${escapeHtml(row.product || '—')}</dd></div><div><dt>数量</dt><dd>${escapeHtml(row.quantity ?? '—')}</dd></div><div><dt>金额</dt><dd>${formatMoney(row.amount)}</dd></div><div><dt>负责人</dt><dd>${escapeHtml(ownerName(row.owner_id))}</dd></div></dl><footer><button data-edit-order="${row.id}" type="button">编辑</button><button class="danger-link" data-delete-order="${row.id}" type="button">删除</button></footer></article>`).join('')}</div>`;
     }
@@ -312,6 +312,11 @@ export async function initOrders(root) {
     if (event.target.closest('#order-change-customer')) {
       clearCustomerSelection(false);
       $('#order-customer-search', root).focus();
+      return;
+    }
+    const archive = event.target.closest('[data-archive-order]');
+    if (archive) {
+      location.hash = `#/files?order=${encodeURIComponent(archive.dataset.archiveOrder)}`;
       return;
     }
     const edit = event.target.closest('[data-edit-order]');

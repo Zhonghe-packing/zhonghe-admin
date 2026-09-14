@@ -2,8 +2,8 @@ import { appState } from './supabase.js';
 import { $, $$ } from './utils.js';
 import { initDashboard, initStatistics } from './dashboard.js';
 import { initCustomers } from './customers.js';
-import { initOrders } from './orders.js';
-import { initFiles } from './files.js';
+import { initOrders } from './orders.js?v=20260914-2';
+import { initFiles } from './files.js?v=20260914-2';
 
 const routes = {
   dashboard: { title: '首页', file: 'dashboard.html', init: initDashboard },
