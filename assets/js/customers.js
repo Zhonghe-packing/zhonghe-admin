@@ -1,9 +1,10 @@
 import { appState, isBoss, supabaseClient, getConfig } from './supabase.js';
 import {
   $, closeModal, debounce, emptyState, errorMessage, escapeHtml, formatDate,
-  openModal, paginate, pick, readSpreadsheet, renderPagination, setButtonLoading,
+  openModal, paginate, renderPagination, setButtonLoading,
   showToast, wireModalDismiss
 } from './utils.js';
+import { importCustomersAndOrders, importSummaryText } from './importer.js?v=20260916-1';
 
 export async function initCustomers(root) {
   const state = { rows: [], profiles: [], page: 1, search: '' };
@@ -87,20 +88,9 @@ export async function initCustomers(root) {
     const button = $('#customer-import', root);
     setButtonLoading(button, true, '正在导入…');
     try {
-      const sheetRows = await readSpreadsheet(file);
-      const profileByUsername = new Map(state.profiles.map(p => [String(p.username).toUpperCase(), p.user_id]));
-      const defaultSalesOwner = state.profiles.find(p => p.role === 'sales')?.user_id;
-      const payload = sheetRows.map(row => ({
-        company: pick(row, ['公司名称', '公司', 'company']), contact: pick(row, ['联系人', 'contact']),
-        phone: pick(row, ['电话', '手机', 'phone']), email: pick(row, ['邮箱', 'email']),
-        country: pick(row, ['国家', '国家/地区', 'country']), address: pick(row, ['地址', '详细地址', 'address']) || null,
-        remark: pick(row, ['备注', 'remark']),
-        owner_id: isBoss() ? (profileByUsername.get(pick(row, ['负责人账号', '负责人', 'owner']).toUpperCase()) || defaultSalesOwner || appState.user.id) : appState.user.id
-      })).filter(row => row.company);
-      if (!payload.length) throw new Error('未找到有效数据，请确认表格包含“公司名称”列');
-      const { error } = await supabaseClient.from('customers').insert(payload);
-      if (error) throw error;
-      showToast(`成功导入 ${payload.length} 位客户`);
+      const summary = await importCustomersAndOrders(file);
+      const warning = summary.warnings.length ? `；${summary.warnings[0]}${summary.warnings.length > 1 ? `（另有 ${summary.warnings.length - 1} 条提醒）` : ''}` : '';
+      showToast(`${importSummaryText(summary)}${warning}`, summary.warnings.length ? 'info' : 'success');
       await load();
     } catch (error) { showToast(errorMessage(error, '导入失败'), 'error'); }
     finally { setButtonLoading(button, false); }

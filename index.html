@@ -6,19 +6,23 @@
   <meta name="theme-color" content="#0b2a54">
   <meta name="description" content="上海众和包装机械有限公司内部销售管理系统">
   <title>众和销售助手</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b2a54'/%3E%3Cpath d='M14 19h17L18 44h17' fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M38 19v25M38 32h13M51 19v25' fill='none' stroke='%233ea6ff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./assets/css/app.css?v=20260914-2">
+  <link rel="icon" type="image/jpeg" href="./assets/img/zhonghe-logo.jpg">
+  <link rel="stylesheet" href="./assets/css/app.css?v=20260916-1">
 </head>
 <body>
   <div id="app-loading" class="app-loading" aria-live="polite">
-    <div class="brand-mark brand-mark--pulse" aria-hidden="true">ZH</div>
-    <span>正在启动…</span>
+    <div class="loading-stage">
+      <div class="loading-logo" aria-hidden="true"><img src="./assets/img/zhonghe-logo.jpg" alt=""></div>
+      <strong>众和销售助手</strong>
+      <div class="loading-progress" aria-hidden="true"><i></i></div>
+      <span>正在安全连接工作台</span>
+    </div>
   </div>
 
   <main id="login-view" class="login-view is-hidden">
     <section class="login-brand" aria-label="品牌介绍">
       <div class="login-brand__content">
-        <div class="login-logo"><span>ZH</span></div>
+        <div class="login-logo"><img src="./assets/img/zhonghe-logo.jpg" alt="上海众和包装机械有限公司 Logo"></div>
         <p class="eyebrow">ZHONGHE PACKING MACHINERY</p>
         <h1>众和销售助手</h1>
         <p class="login-tagline">让销售更高效，让管理更简单</p>
@@ -32,7 +36,7 @@
     <section class="login-panel">
       <form id="login-form" class="login-card" novalidate>
         <div class="login-card__mobile-brand">
-          <div class="brand-mark">ZH</div>
+          <div class="brand-mark"><img src="./assets/img/zhonghe-logo.jpg" alt=""></div>
           <div><strong>众和销售助手</strong><span>ZHONGHE SALES</span></div>
         </div>
         <div class="login-heading">
@@ -66,6 +70,7 @@
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
         </button>
         <p class="login-help">仅限公司内部员工使用</p>
+        <p class="login-legal">本系统仅限公司内部使用，未经授权严禁转载、复制或商用，违者必究。</p>
       </form>
     </section>
   </main>
@@ -73,20 +78,20 @@
   <div id="app-view" class="app-shell is-hidden">
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <div class="brand-mark">ZH</div>
-        <div><strong>众和销售助手</strong><span>ZHONGHE SALES</span></div>
+        <div class="brand-mark"><img src="./assets/img/zhonghe-logo.jpg" alt="上海众和包装机械有限公司 Logo"></div>
+        <div><strong>众和销售助手</strong><span>ZHONGHE SALES ASSISTANT</span></div>
       </div>
       <nav class="sidebar__nav" aria-label="主导航">
-        <a href="#/dashboard" data-route="dashboard"><span class="nav-icon">⌂</span><span>首页</span></a>
-        <a href="#/customers" data-route="customers"><span class="nav-icon">◎</span><span>客户管理</span></a>
-        <a href="#/orders" data-route="orders"><span class="nav-icon">▣</span><span>订单管理</span></a>
-        <a href="#/files" data-route="files"><span class="nav-icon">◇</span><span>资料归档</span></a>
-        <a href="#/statistics" data-route="statistics"><span class="nav-icon">↗</span><span>数据统计</span></a>
-        <a href="#/profile" data-route="profile"><span class="nav-icon">○</span><span>个人中心</span></a>
+        <a href="#/dashboard" data-route="dashboard"><span class="nav-icon">⌂</span><span class="nav-copy"><strong>首页</strong><small>WORKSPACE</small></span></a>
+        <a href="#/customers" data-route="customers"><span class="nav-icon">◎</span><span class="nav-copy"><strong>客户管理</strong><small>CUSTOMERS</small></span></a>
+        <a href="#/orders" data-route="orders"><span class="nav-icon">▣</span><span class="nav-copy"><strong>订单管理</strong><small>ORDERS</small></span></a>
+        <a href="#/files" data-route="files"><span class="nav-icon">◇</span><span class="nav-copy"><strong>资料归档</strong><small>ARCHIVES</small></span></a>
+        <a href="#/statistics" data-route="statistics"><span class="nav-icon">↗</span><span class="nav-copy"><strong>数据统计</strong><small>STATISTICS</small></span></a>
+        <a href="#/profile" data-route="profile"><span class="nav-icon">○</span><span class="nav-copy"><strong>个人中心</strong><small>ACCOUNT</small></span></a>
       </nav>
       <div class="sidebar__footer">
         <div class="sidebar-user">
-          <div id="sidebar-avatar" class="avatar">ZH</div>
+          <div id="sidebar-avatar" class="avatar">—</div>
           <div><strong id="sidebar-name">—</strong><span id="sidebar-role">—</span></div>
         </div>
         <button class="sidebar-logout" data-action="logout" type="button" aria-label="退出登录">↪</button>
@@ -101,10 +106,11 @@
         </div>
         <div class="topbar-actions">
           <span class="secure-chip"><i></i>安全连接</span>
-          <button class="mobile-avatar avatar" data-action="profile" type="button" aria-label="个人中心">ZH</button>
+          <button class="mobile-avatar avatar" data-action="profile" type="button" aria-label="个人中心">—</button>
         </div>
       </header>
       <div id="page-content" class="page-content" aria-live="polite"></div>
+      <footer class="workspace-footer">本系统仅限公司内部使用，未经授权严禁转载、复制或商用，违者必究。</footer>
     </section>
 
     <nav class="mobile-nav" aria-label="手机导航">
@@ -121,6 +127,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="./assets/js/config.js"></script>
-  <script type="module" src="./assets/js/auth.js?v=20260914-2"></script>
+  <script type="module" src="./assets/js/auth.js?v=20260916-1"></script>
 </body>
 </html>

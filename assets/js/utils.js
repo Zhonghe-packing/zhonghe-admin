@@ -47,7 +47,7 @@ export function showToast(message, type = 'success') {
   setTimeout(() => {
     toast.classList.remove('is-visible');
     setTimeout(() => toast.remove(), 250);
-  }, 3200);
+  }, type === 'info' ? 6500 : 3200);
 }
 
 export function setButtonLoading(button, loading, label = '处理中…') {

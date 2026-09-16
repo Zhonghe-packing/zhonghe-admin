@@ -1,5 +1,5 @@
 import { appState, isConfigured, supabaseClient, getConfig } from './supabase.js';
-import { startRouter, stopRouter, navigate } from './router.js?v=20260914-2';
+import { startRouter, stopRouter, navigate } from './router.js?v=20260916-1';
 import { $, $$, errorMessage, initials, roleLabel, setButtonLoading } from './utils.js';
 
 const loading = $('#app-loading');

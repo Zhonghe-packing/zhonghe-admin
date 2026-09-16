@@ -2,9 +2,10 @@ import { appState, isBoss, supabaseClient, getConfig } from './supabase.js';
 import { statusClass } from './dashboard.js';
 import {
   $, closeModal, debounce, emptyState, errorMessage, escapeHtml, formatDate, formatMoney,
-  openModal, paginate, pick, readSpreadsheet, renderPagination, setButtonLoading,
+  openModal, paginate, renderPagination, setButtonLoading,
   showToast, wireModalDismiss
 } from './utils.js';
+import { importCustomersAndOrders, importSummaryText } from './importer.js?v=20260916-1';
 
 export async function initOrders(root) {
   const state = {
@@ -216,24 +217,11 @@ export async function initOrders(root) {
     if (!file) return;
     const button = $('#order-import', root); setButtonLoading(button, true, '正在导入…');
     try {
-      const sheetRows = await readSpreadsheet(file);
-      const customerByName = new Map(state.customers.map(item => [item.company.toLowerCase(), item]));
-      const profileByUsername = new Map(state.profiles.map(item => [String(item.username).toUpperCase(), item.user_id]));
-      const payload = sheetRows.map(row => {
-        const company = pick(row, ['客户', '客户名称', '公司名称', 'company']).toLowerCase();
-        const customer = customerByName.get(company);
-        return {
-          order_no: pick(row, ['订单编号', '订单号', 'order_no']), customer_id: customer?.id || null,
-          product: pick(row, ['产品', '产品名称', 'product']), quantity: Number(pick(row, ['数量', 'quantity'])) || 0,
-          amount: Number(String(pick(row, ['金额', 'amount'])).replaceAll(',', '')) || 0,
-          status: pick(row, ['状态', 'status']) || '待确认', remark: pick(row, ['备注', 'remark']) || null,
-          owner_id: isBoss() ? (profileByUsername.get(pick(row, ['负责人账号', '负责人', 'owner']).toUpperCase()) || customer?.owner_id || appState.user.id) : appState.user.id
-        };
-      }).filter(row => row.order_no && row.product && row.customer_id);
-      if (!payload.length) throw new Error('未找到有效数据，请检查“订单编号、客户、产品”列，且客户须已存在');
-      const { error } = await supabaseClient.from('orders').insert(payload);
-      if (error) throw error;
-      showToast(`成功导入 ${payload.length} 笔订单`); await load();
+      const summary = await importCustomersAndOrders(file);
+      const warning = summary.warnings.length ? `；${summary.warnings[0]}${summary.warnings.length > 1 ? `（另有 ${summary.warnings.length - 1} 条提醒）` : ''}` : '';
+      showToast(`${importSummaryText(summary)}${warning}`, summary.warnings.length ? 'info' : 'success');
+      await loadReferences();
+      await load();
     } catch (error) { showToast(errorMessage(error, '导入失败'), 'error'); }
     finally { setButtonLoading(button, false); }
   });
