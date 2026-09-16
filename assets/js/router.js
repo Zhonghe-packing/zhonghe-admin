@@ -1,9 +1,9 @@
 import { appState } from './supabase.js';
 import { $, $$ } from './utils.js';
 import { initDashboard, initStatistics } from './dashboard.js';
-import { initCustomers } from './customers.js?v=20260916-1';
-import { initOrders } from './orders.js?v=20260916-1';
-import { initFiles } from './files.js?v=20260916-1';
+import { initCustomers } from './customers.js?v=20260916-2';
+import { initOrders } from './orders.js?v=20260916-2';
+import { initFiles } from './files.js?v=20260916-2';
 
 const routes = {
   dashboard: { title: '首页', file: 'dashboard.html', init: initDashboard },
@@ -38,7 +38,7 @@ async function loadRoute() {
   content.innerHTML = '<div class="page-loader"><span class="spinner spinner--blue"></span><p>正在加载…</p></div>';
 
   try {
-    const url = new URL(`./pages/${route.file}?v=20260916-1`, document.baseURI);
+    const url = new URL(`./pages/${route.file}?v=20260916-2`, document.baseURI);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`页面加载失败 (${response.status})`);
     content.innerHTML = await response.text();

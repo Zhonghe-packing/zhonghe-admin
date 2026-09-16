@@ -37,7 +37,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 /* Loading and login */
 .app-loading { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; color: var(--ink-500); background: radial-gradient(circle at 50% 42%, #fff 0, #f5f8fc 38%, #edf3fa 100%); }
 .loading-stage { width: min(320px, calc(100vw - 48px)); display: flex; flex-direction: column; align-items: center; }
-.loading-logo { width: 76px; height: 76px; overflow: hidden; padding: 5px; border: 1px solid #cfd9e7; border-radius: 18px; background: #fff; }
+.loading-logo { width: 86px; height: 86px; overflow: visible; }
+.loading-logo img { mix-blend-mode: multiply; }
 .loading-stage strong { margin-top: 20px; color: var(--navy-950); font-size: 20px; letter-spacing: .03em; }
 .loading-stage > span { margin-top: 11px; font-size: 13px; letter-spacing: .06em; }
 .loading-progress { width: 168px; height: 3px; overflow: hidden; margin-top: 20px; border-radius: 999px; background: #dce5f1; }
@@ -118,7 +119,7 @@ button:disabled { cursor: not-allowed; opacity: .58; transform: none !important;
 .secure-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border: 1px solid #dcebe5; border-radius: 999px; color: #487264; background: #f5fbf8; font-size: 12px; font-weight: 650; }
 .secure-chip i { width: 7px; height: 7px; border-radius: 50%; background: #2ba36f; box-shadow: 0 0 0 3px rgba(43,163,111,.12); }
 .mobile-avatar { display: none; border: 0; }
-.page-content { flex: 1; padding: clamp(22px, 3vw, 42px); }
+.page-content { width: 100%; flex: 1; padding: clamp(22px, 3vw, 42px); }
 .workspace-footer { padding: 15px 24px 20px; color: #8a95a7; font-size: 12px; line-height: 1.6; text-align: center; }
 .mobile-nav { display: none; }
 
@@ -365,7 +366,7 @@ td small { max-width: 260px; overflow: hidden; margin-top: 3px; color: var(--ink
   .topbar h1 { font-size: 30px; }
   .topbar-date { font-size: 15px; }
   .secure-chip { padding: 9px 13px; font-size: 15px; }
-  .page-content { max-width: 1680px; margin: 0 auto; padding: 34px 38px 44px; }
+  .page-content { max-width: none; margin: 0; padding: 34px 38px 44px; }
   .welcome-strip { min-height: 168px; padding: 33px 36px; }
   .welcome-strip h2 { font-size: 33px; }
   .welcome-strip p:last-child { font-size: 18px; }

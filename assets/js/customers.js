@@ -4,7 +4,7 @@ import {
   openModal, paginate, renderPagination, setButtonLoading,
   showToast, wireModalDismiss
 } from './utils.js';
-import { importCustomersAndOrders, importSummaryText } from './importer.js?v=20260916-1';
+import { importCustomersAndOrders, importSummaryText } from './importer.js?v=20260916-2';
 
 export async function initCustomers(root) {
   const state = { rows: [], profiles: [], page: 1, search: '' };
